@@ -55,7 +55,7 @@ class ArticleController extends Controller
             $details = new ArticleResource($article);
             return response()->json(['status' => true, 'data' => $details, 'message' => 'success']);
         } catch (\Throwable $th) {
-             return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
+            return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
         }
     }
 
@@ -72,7 +72,7 @@ class ArticleController extends Controller
         try {
             $article->update($request->validated());
             return response()->json(['status' => true, 'data' => $article, 'message' => 'You have successfully updated']);
-        }catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
         }
     }
@@ -88,9 +88,8 @@ class ArticleController extends Controller
         try {
             $article->delete();
             return response()->json(['status' => true, 'data' => $article, 'message' => 'You have deleted successfully']);
-        }catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
         }
     }
-
 }

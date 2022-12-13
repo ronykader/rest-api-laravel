@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
-use Illuminate\Http\Request;
 
 class ArticleService
 {
