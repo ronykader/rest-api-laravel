@@ -4,6 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+
 class ArticleRequest extends FormRequest
 {
     /**
@@ -11,7 +14,7 @@ class ArticleRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,11 +24,27 @@ class ArticleRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'title' => 'required',
+            'slug' => 'required|unique:articles',
             'article' => 'required'
         ];
+    }
+
+
+    /**
+     * @param Validator $validator
+     * @return void
+     */
+    public function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'success'   => false,
+            'message'   => 'Validation errors',
+            'data'      => $validator->errors()
+
+        ],422));
     }
 }

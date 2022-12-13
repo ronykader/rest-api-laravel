@@ -7,8 +7,10 @@ use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Http\Resources\ArticleResourceCollection;
 use App\Models\Article;
-use Illuminate\Http\JsonResponse;
+use App\Services\ArticleService;
+use Illuminate\Http\JsonResponse as JsonResponseAlias;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use PHPUnit\Util\Json;
 
 class ArticleController extends Controller
@@ -16,7 +18,7 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(): object
     {
@@ -28,17 +30,14 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param ArticleRequest $request
+     * @return JsonResponseAlias
      */
-    public function store(ArticleRequest $request): JsonResponse
+    public function store(ArticleRequest $request): JsonResponseAlias
     {
         try {
-            $article = new Article;
-            $article->title = $request->title;
-            $article->article = $request->article;
-            $article->save();
-            return response()->json(['status' => true, 'data' => '', 'message' => 'You have created an article successfully'], 200);
+            $article = (new ArticleService())->createArticle($request);
+            return response()->json(['status' => true, 'data' => $article, 'message' => 'You have successfully created an article'], 200);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
         }
@@ -47,50 +46,51 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Article $article
+     * @return JsonResponseAlias
      */
-    public function show(Article $article): JsonResponse
+    public function show(Article $article): JsonResponseAlias
     {
-
-        $details = new ArticleResource($article);
-
-        return response()->json(['status' => true, 'data' => $details, 'message' => 'success']);
+        try {
+            $details = new ArticleResource($article);
+            return response()->json(['status' => true, 'data' => $details, 'message' => 'success']);
+        } catch (\Throwable $th) {
+             return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param ArticleRequest $request
+     * @param Article $article
+     * @return JsonResponseAlias
      */
-    public function update(ArticleRequest $request, Article $article): JsonResponse
+    public function update(ArticleRequest $request, Article $article): JsonResponseAlias
     {
-        $article->update($request->validated());
-        return response()->json(['status' => true, 'data' => $article, 'message' => 'You have successfully updated']);
+        try {
+            $article->update($request->validated());
+            return response()->json(['status' => true, 'data' => $article, 'message' => 'You have successfully updated']);
+        }catch (\Throwable $th) {
+            return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Article $article
+     * @return JsonResponseAlias
      */
-    public function destroy(Article $article): JsonResponse
+    public function destroy(Article $article): JsonResponseAlias
     {
-        $article->delete();
-        return response()->json(['status' => true, 'data' => $article, 'message' => 'You have deleted successfully']);
+        try {
+            $article->delete();
+            return response()->json(['status' => true, 'data' => $article, 'message' => 'You have deleted successfully']);
+        }catch (\Throwable $th) {
+            return response()->json(['status' => false, 'data' => '', 'message' => $th->getMessage()], 422);
+        }
     }
+
 }

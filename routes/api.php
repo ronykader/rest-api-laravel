@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::group(['prefix' => 'v2'], function () {
-    Route::apiResource('/articles', ArticleController::class);
-});
+Route::group(['prefix' => 'v2'],
+    function () {
+        Route::apiResource('/articles', ArticleController::class);
+    });
